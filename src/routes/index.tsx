@@ -1,19 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Moon, Sun, Flame, Check, ArrowRight, SlidersHorizontal, CloudRain, HeartHandshake, FileSearch, Users, type LucideIcon } from "lucide-react";
+import { Moon, Sun, Flame, Check, ArrowRight, SlidersHorizontal, CloudRain, HeartHandshake, FileSearch, Users, Heart, Cake, Building2, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import dashboard from "@/assets/dashboard.jpg";
 
 const faqs = [
-  ["Does it replace a wedding planner?", "No. It covers the planning work you would do yourself, and it produces a brief you can hand to a planner."],
+  ["Is Kindle only for weddings?", "No. Weddings, birthdays and community events are planned the same way: a budget, a dated timeline, a vendor checklist and personalised ideas. A 12-guest birthday and a 1,500-guest wedding both fit."],
+  ["Does it replace a planner?", "No. It covers the planning work you would do yourself, and it produces a brief you can hand to a planner."],
   ["Where do the price estimates come from?", "From city-tier benchmark ranges for each category, adjusted for your guest count and season. You can overwrite every number."],
   ["Who can see my guest list?", "Only members you invite. RSVP links show a guest only their own response."],
   ["Does it work in Hindi?", "The interface and generated messages are available in English and Hindi."],
   ["Can I use it offline?", "Day-Of Mode works without a connection once the plan is loaded."],
 ];
 
-const TITLE = "Kindle — Plan the whole celebration in one evening";
-const DESC = "Enter date, city, guests and budget. Kindle returns a dated timeline, line-item budget and vendor checklist in about 2 minutes.";
+const TITLE = "Kindle — Weddings, birthdays and community events, planned tonight";
+const DESC = "Enter date, city, guests and budget. Kindle returns a dated timeline, line-item budget and vendor checklist for weddings, birthdays and community events in about 2 minutes.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,10 +69,48 @@ function Cta({ children = "Start planning free" }: { children?: string }) {
 
 const featureSections = [
   ["Try changing your mind", "Add 40 guests and see the bill before you tell anyone.", "Move a slider. Catering, venue size and timeline update in under 3 seconds, with a line-by-line difference.", "+40 guests = +₹1.8L catering · venue upgrade · +2 buffer weeks"],
-  ["Murphy Mode", "Eight things that could go wrong at your event, each with a Plan B.", "Kindle reads your venue type, season and guest mix, then lists the failures that are most likely for you. Each comes with a trigger, a person responsible and a cost.", "Rain on outdoor sangeet → move to banquet hall B · Owner: Kabir · ₹35,000"],
-  ["Built around how your family celebrates", "Rituals, diets and timings handled from the first draft.", "Choose a tradition and enter your muhurat. The timeline respects it. The catering plan separates Jain, halal, vegetarian and no-onion-garlic counts so the caterer gets one correct number per diet.", "Jain 42 · Halal 18 · Vegetarian 210 · No onion-garlic 25"],
+  ["Murphy Mode", "Eight things that could go wrong, each with a Plan B.", "Kindle reads your venue type, season and guest mix, then lists the failures most likely for you — rain on an open-air birthday, a power cut at the community hall, a caterer who under-delivers. Each comes with a trigger, a person responsible and a cost.", "Power cut at the community hall → generator held · Owner: Kabir · ₹6,000"],
+  ["Built around how you celebrate", "Rituals, diets and timings handled from the first draft — a birthday pooja, a wedding muhurat or a community iftar.", "Tell Kindle the tradition and the time it has to happen, and the timeline respects it. The catering plan separates Jain, halal, vegetarian and no-onion-garlic counts so the caterer gets one correct number per diet.", "Jain 42 · Halal 18 · Vegetarian 210 · No onion-garlic 25"],
   ["Quotes in, comparison out", "Upload three caterer quotes. See which one is cheapest once service charge and overtime are counted.", "Kindle pulls out every line item, flags the extras that are easy to miss and drafts a negotiation message you can send on WhatsApp.", "Hidden: 10% service charge, ₹8,000 overtime after 11 pm"],
-  ["One plan, the whole family", "Parents, cousins and the planner all see the same plan.", "Give each person a role. Put two venues up for a vote. The result stays on the page, so nobody has to scroll through a 400-message group chat to find it.", "Venue vote: Lawns 5 · Banquet 2 — decided"],
+  ["One plan, everyone", "Parents, cousins, the birthday child's friends and the event committee all see the same plan.", "Give each person a role. Put two venues up for a vote. The result stays on the page, so nobody has to scroll through a 400-message group chat to find it.", "Venue vote: Lawns 5 · Banquet 2 — decided"],
+];
+
+type EventType = { name: string; sample: string; icon: LucideIcon; rows: [string, string][] };
+
+const eventTypes: EventType[] = [
+  {
+    name: "Weddings",
+    icon: Heart,
+    sample: "400 guests · Pune · 90 days out",
+    rows: [
+      ["Budget", "12 categories with an 18% buffer, every deposit tracked to its date"],
+      ["Timeline", "40–90 dated tasks with an owner on each, from mehendi to send-off"],
+      ["Vendor checklist", "Venue, caterer, photographer, florist, transport — and what to ask before you pay"],
+      ["Personalised ideas", "25 ideas for theme, menu, decor and entertainment that fit the family's rituals"],
+    ],
+  },
+  {
+    name: "Birthdays",
+    icon: Cake,
+    sample: "60 guests · Thane · 3 weeks out",
+    rows: [
+      ["Budget", "Cake, decor, venue, entertainment and favours — every rupee assigned"],
+      ["Timeline", "22 dated tasks: invites out 14 days before, cake confirmed by day 3"],
+      ["Vendor checklist", "Baker, decorator, photographer, and someone to run the kids' hour"],
+      ["Personalised ideas", "Themes by age, a menu kids actually eat, and a surprise under ₹5,000"],
+    ],
+  },
+  {
+    name: "Community events",
+    icon: Building2,
+    sample: "300 guests · Andheri · 6 weeks out",
+    rows: [
+      ["Budget", "Sponsorship, permits and donations on the same sheet as costs"],
+      ["Timeline", "30 dated tasks with a volunteer owner against each one"],
+      ["Vendor checklist", "Hall, caterer, sound, security and the permit office — with what to ask each"],
+      ["Personalised ideas", "Fundraiser formats, a 3-hour programme, and an invite people forward"],
+    ],
+  },
 ];
 
 function useReveal() {
