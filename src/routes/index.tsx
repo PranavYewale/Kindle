@@ -159,6 +159,7 @@ function Index() {
           <a href="#" className="flex items-center gap-2 font-display text-2xl font-semibold"><Flame className="size-6 text-primary" aria-hidden />Kindle</a>
           <div className="hidden gap-6 text-sm text-muted-foreground md:flex">
             <a href="#how" className="hover:text-foreground">How it works</a>
+            <a href="#events" className="hover:text-foreground">Events</a>
             <a href="#features" className="hover:text-foreground">Features</a>
             <a href="#pricing" className="hover:text-foreground">Pricing</a>
             <a href="#faq" className="hover:text-foreground">FAQ</a>
@@ -176,18 +177,19 @@ function Index() {
           <div aria-hidden className="pointer-events-none absolute -left-20 top-20 size-72 animate-blob rounded-full bg-primary/20 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -right-10 top-60 size-80 animate-blob rounded-full bg-secondary/20 blur-3xl [animation-delay:-7s]" />
           <div className="relative mx-auto max-w-6xl px-6 pb-16 pt-20 text-center md:pt-28">
-            <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.05] md:text-7xl">Plan the whole celebration in <em className="text-primary">one evening.</em></h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">Enter the date, city, guest count and budget. Kindle returns a dated 90-day timeline, a line-item budget and a vendor checklist in about 2 minutes.</p>
+            <p className="mx-auto max-w-xl text-sm font-semibold uppercase tracking-widest text-secondary">Weddings · Birthdays · Community events</p>
+            <h1 className="mx-auto mt-4 max-w-4xl text-5xl font-semibold leading-[1.05] md:text-7xl">Plan the whole celebration in <em className="text-primary">one evening.</em></h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">Wedding, birthday or society festival: enter the date, city, guest count and budget. Kindle returns a dated timeline, a line-item budget and a vendor checklist in about 2 minutes.</p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
               <Cta />
-              <a href="#dashboard" className="rounded-full border px-6 py-3 font-medium hover:bg-muted">See a sample wedding plan</a>
+              <a href="#events" className="rounded-full border px-6 py-3 font-medium hover:bg-muted">See a plan for each event type</a>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">No card needed. Plans for 50 to 1,500 guests.</p>
-            <img src={dashboard} width={1600} height={933} alt="Kindle dashboard showing the Decision Queue, wedding timeline and budget flow for a 400-guest wedding in Pune" className="reveal mx-auto mt-14 rounded-2xl border shadow-2xl shadow-foreground/10" fetchPriority="high" />
+            <p className="mt-4 text-sm text-muted-foreground">No card needed. From a 12-guest birthday to a 1,500-guest wedding.</p>
+            <img src={dashboard} width={1600} height={933} alt="Kindle dashboard showing the Decision Queue, timeline and budget flow for a 400-guest event in Pune" className="reveal mx-auto mt-14 rounded-2xl border shadow-2xl shadow-foreground/10" fetchPriority="high" />
             <p className="mt-8 text-sm tracking-wide text-muted-foreground">Used to plan 1,200+ events across 14 cities.</p>
             <div className="mt-6 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
               <div className="flex w-max animate-marquee gap-10 font-display text-xl text-muted-foreground">
-                {[0, 1].flatMap((n) => ["Weddings", "Birthdays", "Sangeet", "Mehendi", "Reunions", "College fests", "Fundraisers", "Society festivals"].map((t) => <span key={n + t}>✦ {t}</span>))}
+                {[0, 1].flatMap((n) => ["Weddings", "Birthdays", "Community events", "Sangeet", "Mehendi", "Society festivals", "Kids' birthdays", "Reunions", "College fests", "Fundraisers"].map((t) => <span key={n + t}>✦ {t}</span>))}
               </div>
             </div>
             <div aria-hidden className="river mx-auto mt-8 h-1 max-w-md rounded-full" />
@@ -208,10 +210,37 @@ function Index() {
           </div>
         </section>
 
+        <section id="events" className="border-y bg-card py-24">
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="reveal max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-widest text-secondary">Not just weddings</p>
+              <h2 className="mt-3 text-4xl font-semibold md:text-5xl">Birthdays and community events get the same plan.</h2>
+              <p className="mt-5 text-lg text-muted-foreground">Budget, timeline, vendor checklist and personalised ideas — whichever you're planning. Here's what each one looks like.</p>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {eventTypes.map(({ name, icon: Icon, sample, rows }) => (
+                <article key={name} className="reveal flex flex-col rounded-3xl border bg-background p-7 transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10">
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/15 text-primary"><Icon className="size-5" aria-hidden /></span>
+                  <h3 className="mt-5 text-2xl">{name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{sample}</p>
+                  <dl className="mt-5 space-y-3 text-sm">
+                    {rows.map(([k, v]) => (
+                      <div key={k} className="border-t pt-3">
+                        <dt className="text-xs font-semibold uppercase tracking-widest text-secondary">{k}</dt>
+                        <dd className="mt-1 text-muted-foreground">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="dashboard" className="mx-auto max-w-6xl px-6 py-24">
           <p className="text-sm font-semibold uppercase tracking-widest text-secondary">The dashboard tells you what to decide next</p>
           <h2 className="mt-3 max-w-3xl text-4xl font-semibold md:text-5xl">Your next decision, ranked by what it costs to wait.</h2>
-          <p className="mt-5 max-w-2xl text-lg text-muted-foreground">Most planners list 200 tasks and leave you to sort them. Kindle shows the 3 to 5 decisions that matter this week, with a recommended option and the date after which prices usually rise.</p>
+          <p className="mt-5 max-w-2xl text-lg text-muted-foreground">Most planners list 200 tasks and leave you to sort them. Kindle shows the 3 to 5 decisions that matter this week, with a recommended option and the date after which prices usually rise — whether it's a wedding, a birthday or a community event.</p>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[["Venue", "Book by 14 Nov or lose the Saturday slot. Prices typically rise 12% after that."], ["Caterer", "Decide by 20 Nov. Tasting slots fill four weeks out."], ["Photographer", "Decide by 28 Nov. Your top pick has two dates left in February."]].map(([h, b], i) => (
               <div key={h} className="reveal rounded-xl border bg-card p-6">
