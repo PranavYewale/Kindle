@@ -200,7 +200,7 @@ function Index() {
                 {["Rain on outdoor sangeet", "Caterer under-delivers", "DJ no-show"].map((r, i) => (
                   <li key={r} className="flex items-center gap-2 rounded-lg bg-background/70 px-3 py-2">
                     <span className="relative flex size-2.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" style={{ animationDelay: `${i * 0.4}s` }} /><span className="relative size-2.5 rounded-full bg-primary" /></span>
-                    {r}<span className="ml-auto text-xs text-secondary">Plan B ready</span>
+                    {r}<span className="ml-auto whitespace-nowrap text-xs text-secondary">Plan B ready</span>
                   </li>
                 ))}
               </ul>
