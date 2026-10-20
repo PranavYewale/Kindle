@@ -192,10 +192,10 @@ function Index() {
             <h2 className="mt-3 text-4xl md:text-5xl">Everything a family needs, nothing it has to sort out alone.</h2>
           </div>
           <div className="grid gap-5 md:grid-cols-6">
-            <FeatureCard span="md:col-span-4" icon={SlidersHorizontal} k={featureSections[0]}>
+            <FeatureCard span="md:col-span-4" icon={SlidersHorizontal} k={featureSections[0]!}>
               <WhatIf />
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={CloudRain} k={featureSections[1]}>
+            <FeatureCard span="md:col-span-2" icon={CloudRain} k={featureSections[1]!}>
               <ul className="space-y-2 text-sm">
                 {["Rain on outdoor sangeet", "Caterer under-delivers", "DJ no-show"].map((r, i) => (
                   <li key={r} className="flex items-center gap-2 rounded-lg bg-background/70 px-3 py-2">
@@ -205,7 +205,7 @@ function Index() {
                 ))}
               </ul>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={HeartHandshake} k={featureSections[2]}>
+            <FeatureCard span="md:col-span-2" icon={HeartHandshake} k={featureSections[2]!}>
               <div className="space-y-2 text-sm">
                 {[["Jain", 42], ["Halal", 18], ["Vegetarian", 210], ["No onion-garlic", 25]].map(([l, n]) => (
                   <div key={l as string}><div className="flex justify-between"><span>{l}</span><span className="font-semibold">{n}</span></div>
@@ -213,14 +213,14 @@ function Index() {
                 ))}
               </div>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={FileSearch} k={featureSections[3]}>
+            <FeatureCard span="md:col-span-2" icon={FileSearch} k={featureSections[3]!}>
               <div className="space-y-2 text-sm">
                 {[["Caterer A", "₹4.2L", false], ["Caterer B", "₹3.9L", true], ["Caterer C", "₹4.6L", false]].map(([n, p, best]) => (
                   <div key={n as string} className={`flex justify-between rounded-lg px-3 py-2 ${best ? "bg-primary text-primary-foreground" : "bg-background/70"}`}><span>{n}</span><span className="font-semibold">{p}{best ? " · best" : ""}</span></div>
                 ))}
               </div>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={Users} k={featureSections[4]}>
+            <FeatureCard span="md:col-span-2" icon={Users} k={featureSections[4]!}>
               <div className="flex -space-x-3">
                 {["M", "P", "K", "A", "R"].map((c, i) => (
                   <span key={c} className="flex size-11 animate-float items-center justify-center rounded-full border-2 border-card bg-accent font-semibold text-accent-foreground" style={{ animationDelay: `${i * 0.3}s` }}>{c}</span>
