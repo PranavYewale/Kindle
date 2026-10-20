@@ -154,7 +154,7 @@ function Index() {
   return (
     <div className="min-h-screen">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-card focus:p-2">Skip to content</a>
-      <header className="sticky top-3 z-40 mx-auto w-[calc(100%-1.5rem)] max-w-3xl rounded-2xl border border-border/70 bg-background/85 px-4 py-2.5 shadow-sm backdrop-blur">
+      <header className="sticky top-3 z-40 mx-auto w-[calc(100%-1.5rem)] max-w-4xl rounded-2xl border border-border/70 bg-background/85 px-4 py-2.5 shadow-sm backdrop-blur">
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:gap-x-8" aria-label="Main">
           <a href="#" className="flex items-center gap-2 font-display text-2xl font-semibold"><Flame className="size-6 text-primary" aria-hidden />Kindle</a>
           <div className="hidden gap-6 text-sm text-muted-foreground md:flex">
