@@ -116,15 +116,15 @@ function Index() {
     <div className="min-h-screen">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-card focus:p-2">Skip to content</a>
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4" aria-label="Main">
+        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-6 py-4" aria-label="Main">
           <a href="#" className="flex items-center gap-2 font-display text-2xl font-semibold"><Flame className="size-6 text-primary" aria-hidden />Kindle</a>
-          <div className="ml-6 hidden gap-6 text-sm text-muted-foreground md:flex">
+          <div className="hidden gap-6 text-sm text-muted-foreground md:flex">
             <a href="#how" className="hover:text-foreground">How it works</a>
             <a href="#features" className="hover:text-foreground">Features</a>
             <a href="#pricing" className="hover:text-foreground">Pricing</a>
             <a href="#faq" className="hover:text-foreground">FAQ</a>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             <a href="#pricing" className="hidden text-sm font-medium sm:inline">Log in</a>
             <a href="#pricing" className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background">Start planning</a>
