@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun, Flame, Check, ArrowRight, SlidersHorizontal, CloudRain, HeartHandshake, FileSearch, Users, Heart, Cake, Building2, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import dashboard from "@/assets/dashboard.jpg";
+import { ScrollHeading, useScrollMotion } from "@/components/scroll-motion";
 
 const faqs = [
   ["Is Kindle only for weddings?", "No. Weddings, birthdays and community events are planned the same way: a budget, a dated timeline, a vendor checklist and personalised ideas. A 12-guest birthday and a 1,500-guest wedding both fit."],
@@ -23,6 +24,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: DESC },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     scripts: [
       {
@@ -113,15 +116,7 @@ const eventTypes: EventType[] = [
   },
 ];
 
-function useReveal() {
-  useEffect(() => {
-    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add("is-visible"), io.unobserve(e.target))), { threshold: 0.15 });
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-}
-
-function FeatureCard({ span, icon: Icon, k, children }: { span: string; icon: LucideIcon; k: string[]; children: ReactNode }) {
+function FeatureCard({ span, icon: Icon, k = [], children }: { span: string; icon: LucideIcon; k: string[] | undefined; children: ReactNode }) {
   return (
     <article className={`reveal group flex flex-col rounded-3xl border bg-card p-7 transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10 ${span}`}>
       <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/15 text-primary transition group-hover:rotate-6 group-hover:scale-110"><Icon className="size-5" aria-hidden /></span>
@@ -150,9 +145,10 @@ function WhatIf() {
 }
 
 function Index() {
-  useReveal();
+  useScrollMotion();
   return (
     <div className="min-h-screen">
+      <div className="scroll-progress" aria-hidden="true" />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-card focus:p-2">Skip to content</a>
       <header className="sticky top-3 z-40 mx-auto w-[calc(100%-1.5rem)] max-w-4xl rounded-2xl border border-border/70 bg-background/85 px-4 py-2.5 shadow-sm backdrop-blur">
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:gap-x-8" aria-label="Main">
@@ -174,8 +170,6 @@ function Index() {
 
       <main id="main">
         <section className="glow-hero relative overflow-hidden">
-          <div aria-hidden className="pointer-events-none absolute -left-20 top-20 size-72 animate-blob rounded-full bg-primary/20 blur-3xl" />
-          <div aria-hidden className="pointer-events-none absolute -right-10 top-60 size-80 animate-blob rounded-full bg-secondary/20 blur-3xl [animation-delay:-7s]" />
           <div className="relative mx-auto max-w-6xl px-6 pb-16 pt-20 text-center md:pt-28">
             <p className="mx-auto max-w-xl text-sm font-semibold uppercase tracking-widest text-secondary">Weddings · Birthdays · Community events</p>
             <h1 className="mx-auto mt-4 max-w-4xl text-5xl font-semibold leading-[1.05] md:text-7xl">Plan the whole celebration in <em className="text-primary">one evening.</em></h1>
@@ -185,9 +179,11 @@ function Index() {
               <a href="#events" className="rounded-full border px-6 py-3 font-medium hover:bg-muted">See a plan for each event type</a>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">No card needed. From a 12-guest birthday to a 1,500-guest wedding.</p>
-            <img src={dashboard} width={1600} height={933} alt="Kindle dashboard showing the Decision Queue, timeline and budget flow for a 400-guest event in Pune" className="reveal mx-auto mt-14 rounded-2xl border shadow-2xl shadow-foreground/10" fetchPriority="high" />
+            <div className="dashboard-scene mt-14" data-scroll-scene>
+              <img src={dashboard} width={1600} height={933} alt="Kindle dashboard showing the Decision Queue, timeline and budget flow for a 400-guest event in Pune" className="mx-auto rounded-2xl border shadow-2xl shadow-foreground/10" fetchPriority="high" />
+            </div>
             <p className="mt-8 text-sm tracking-wide text-muted-foreground">Used to plan 1,200+ events across 14 cities.</p>
-            <div className="mt-6 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
+            <div className="mt-6 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]" data-scroll-drift>
               <div className="flex w-max animate-marquee gap-10 font-display text-xl text-muted-foreground">
                 {[0, 1].flatMap((n) => ["Weddings", "Birthdays", "Community events", "Sangeet", "Mehendi", "Society festivals", "Kids' birthdays", "Reunions", "College fests", "Fundraisers"].map((t) => <span key={n + t}>✦ {t}</span>))}
               </div>
@@ -198,7 +194,7 @@ function Index() {
 
         <section className="border-y bg-card py-20">
           <div className="mx-auto max-w-6xl px-6">
-            <h2 className="reveal text-3xl font-semibold md:text-4xl">What you get after two minutes</h2>
+            <ScrollHeading className="text-3xl font-semibold md:text-4xl">What you get after two minutes</ScrollHeading>
             <div className="mt-10 grid gap-6 md:grid-cols-4">
               {[["40–90", "dated tasks, each with an owner field"], ["12", "budget categories that add up to your total, to the rupee"], ["1", "vendor checklist with the questions to ask before you pay a deposit"], ["25", "personalised ideas for theme, menu, decor and entertainment"]].map(([n, t]) => (
                 <div key={t} className="reveal border-t-2 border-primary pt-4">
@@ -212,9 +208,9 @@ function Index() {
 
         <section id="events" className="border-y bg-card py-24">
           <div className="mx-auto max-w-6xl px-6">
-            <div className="reveal max-w-2xl">
+            <div className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-widest text-secondary">Not just weddings</p>
-              <h2 className="mt-3 text-4xl font-semibold md:text-5xl">Birthdays and community events get the same plan.</h2>
+              <ScrollHeading className="mt-3 text-4xl font-semibold md:text-5xl">Birthdays and community events get the same plan.</ScrollHeading>
               <p className="mt-5 text-lg text-muted-foreground">Budget, timeline, vendor checklist and personalised ideas — whichever you're planning. Here's what each one looks like.</p>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -239,7 +235,7 @@ function Index() {
 
         <section id="dashboard" className="mx-auto max-w-6xl px-6 py-24">
           <p className="text-sm font-semibold uppercase tracking-widest text-secondary">The dashboard tells you what to decide next</p>
-          <h2 className="mt-3 max-w-3xl text-4xl font-semibold md:text-5xl">Your next decision, ranked by what it costs to wait.</h2>
+          <ScrollHeading className="mt-3 max-w-3xl text-4xl font-semibold md:text-5xl">Your next decision, ranked by what it costs to wait.</ScrollHeading>
           <p className="mt-5 max-w-2xl text-lg text-muted-foreground">Most planners list 200 tasks and leave you to sort them. Kindle shows the 3 to 5 decisions that matter this week, with a recommended option and the date after which prices usually rise — whether it's a wedding, a birthday or a community event.</p>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[["Venue", "Book by 14 Nov or lose the Saturday slot. Prices typically rise 12% after that."], ["Caterer", "Decide by 20 Nov. Tasting slots fill four weeks out."], ["Photographer", "Decide by 28 Nov. Your top pick has two dates left in February."]].map(([h, b], i) => (
@@ -255,15 +251,15 @@ function Index() {
         </section>
 
         <section id="features" className="mx-auto max-w-6xl px-6 pb-24">
-          <div className="reveal mb-12 max-w-2xl">
+          <div className="mb-12 max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-widest text-secondary">Features</p>
-            <h2 className="mt-3 text-4xl md:text-5xl">Everything a family needs, nothing it has to sort out alone.</h2>
+            <ScrollHeading className="mt-3 text-4xl md:text-5xl">Everything a family needs, nothing it has to sort out alone.</ScrollHeading>
           </div>
           <div className="grid gap-5 md:grid-cols-6">
-            <FeatureCard span="md:col-span-4" icon={SlidersHorizontal} k={featureSections[0]!}>
+            <FeatureCard span="md:col-span-4" icon={SlidersHorizontal} k={featureSections[0]}>
               <WhatIf />
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={CloudRain} k={featureSections[1]!}>
+            <FeatureCard span="md:col-span-2" icon={CloudRain} k={featureSections[1]}>
               <ul className="space-y-2 text-sm">
                 {["Rain on outdoor sangeet", "Caterer under-delivers", "DJ no-show"].map((r, i) => (
                   <li key={r} className="flex items-center gap-2 rounded-lg bg-background/70 px-3 py-2">
@@ -273,7 +269,7 @@ function Index() {
                 ))}
               </ul>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={HeartHandshake} k={featureSections[2]!}>
+            <FeatureCard span="md:col-span-2" icon={HeartHandshake} k={featureSections[2]}>
               <div className="space-y-2 text-sm">
                 {[["Jain", 42], ["Halal", 18], ["Vegetarian", 210], ["No onion-garlic", 25]].map(([l, n]) => (
                   <div key={l as string}><div className="flex justify-between"><span>{l}</span><span className="font-semibold">{n}</span></div>
@@ -281,14 +277,14 @@ function Index() {
                 ))}
               </div>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={FileSearch} k={featureSections[3]!}>
+            <FeatureCard span="md:col-span-2" icon={FileSearch} k={featureSections[3]}>
               <div className="space-y-2 text-sm">
                 {[["Caterer A", "₹4.2L", false], ["Caterer B", "₹3.9L", true], ["Caterer C", "₹4.6L", false]].map(([n, p, best]) => (
                   <div key={n as string} className={`flex justify-between rounded-lg px-3 py-2 ${best ? "bg-primary text-primary-foreground" : "bg-background/70"}`}><span>{n}</span><span className="font-semibold">{p}{best ? " · best" : ""}</span></div>
                 ))}
               </div>
             </FeatureCard>
-            <FeatureCard span="md:col-span-2" icon={Users} k={featureSections[4]!}>
+            <FeatureCard span="md:col-span-2" icon={Users} k={featureSections[4]}>
               <div className="flex -space-x-3">
                 {["M", "P", "K", "A", "R"].map((c, i) => (
                   <span key={c} className="flex size-11 animate-float items-center justify-center rounded-full border-2 border-card bg-accent font-semibold text-accent-foreground" style={{ animationDelay: `${i * 0.3}s` }}>{c}</span>
@@ -301,11 +297,12 @@ function Index() {
 
         <section id="how" className="border-y bg-card py-24">
           <div className="mx-auto max-w-6xl px-6">
-            <h2 className="text-4xl font-semibold">How it works</h2>
-            <ol className="mt-10 grid gap-8 md:grid-cols-4">
+            <ScrollHeading className="text-4xl font-semibold">How it works</ScrollHeading>
+            <ol className="scroll-timeline mt-10 grid gap-8 md:grid-cols-4">
+              <li className="timeline-track" aria-hidden="true" role="presentation" />
               {["Answer 8 questions about your event.", "Review the plan Kindle drafts.", "Book vendors from the checklist and log payments.", "On the day, open Day-Of Mode. It works offline."].map((s, i) => (
-                <li key={s} className="reveal">
-                  <span className="flex size-10 items-center justify-center rounded-full bg-primary font-display text-lg text-primary-foreground">{i + 1}</span>
+                <li key={s} className="reveal relative pl-16 md:pl-0">
+                  <span className="absolute left-0 top-0 flex size-10 items-center justify-center rounded-full bg-primary font-display text-lg text-primary-foreground md:relative">{i + 1}</span>
                   <p className="mt-4 text-lg">{s}</p>
                 </li>
               ))}
@@ -314,7 +311,7 @@ function Index() {
         </section>
 
         <section id="pricing" className="mx-auto max-w-4xl px-6 py-24">
-          <h2 className="reveal text-center text-4xl font-semibold">Pay once per event. No subscription.</h2>
+          <ScrollHeading className="text-center text-4xl font-semibold">Pay once per event. No subscription.</ScrollHeading>
           <div className="mt-12 grid gap-6 md:grid-cols-2">
             {[
               { name: "Free", price: "₹0", items: ["1 event", "Full AI plan", "Budget tracker", "10 AI regenerations per month"] },
@@ -332,7 +329,7 @@ function Index() {
         </section>
 
         <section id="faq" className="mx-auto max-w-3xl px-6 pb-24">
-          <h2 className="text-4xl font-semibold">Questions</h2>
+          <ScrollHeading className="text-4xl font-semibold">Questions</ScrollHeading>
           <div className="mt-8 divide-y border-y">
             {faqs.map(([q, a]) => (
               <details key={q} className="group py-5">
@@ -344,7 +341,7 @@ function Index() {
         </section>
 
         <section className="glow-hero border-t py-24 text-center">
-          <h2 className="reveal mx-auto max-w-3xl px-6 text-4xl font-semibold md:text-5xl">Your date is fixed. Your plan can be ready tonight.</h2>
+          <ScrollHeading className="mx-auto max-w-3xl px-6 text-4xl font-semibold md:text-5xl">Your date is fixed. Your plan can be ready tonight.</ScrollHeading>
           <div className="mt-8"><Cta /></div>
         </section>
       </main>

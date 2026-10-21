@@ -51,7 +51,7 @@ export function useScrollMotion() {
       const resize = () => { measure(); schedule(); };
       measure();
       update();
-      root.dataset.scrollMotion = "on";
+      root.dataset["scrollMotion"] = "on";
       window.addEventListener("scroll", schedule, { passive: true });
       window.addEventListener("resize", resize);
       const sizeObserver = new ResizeObserver(resize);
@@ -62,7 +62,7 @@ export function useScrollMotion() {
         cancelAnimationFrame(frame);
         window.removeEventListener("scroll", schedule);
         window.removeEventListener("resize", resize);
-        delete root.dataset.scrollMotion;
+        delete root.dataset["scrollMotion"];
         root.style.removeProperty("--page-progress");
       };
     };
