@@ -135,7 +135,7 @@
   transform-origin: left;
   pointer-events: none;
 }
-.word-mask { display: inline-block; overflow: clip; vertical-align: bottom; padding-bottom: .12em; margin-bottom: -.12em; }
+.word-mask { display: inline-block; overflow: clip; vertical-align: bottom; padding-bottom: .12em; margin-bottom: -.12em; margin-inline-end: .22em; }
 .word-rise { display: inline-block; }
 [data-scroll-motion="on"] .scroll-title:not(.is-visible) .word-rise { transform: translateY(115%) rotate(3deg); opacity: 0; }
 [data-scroll-motion="on"] .word-rise { transition: transform 1s cubic-bezier(.16,1,.3,1), opacity .7s ease; }

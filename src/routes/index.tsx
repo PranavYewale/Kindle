@@ -116,7 +116,7 @@ const eventTypes: EventType[] = [
   },
 ];
 
-function FeatureCard({ span, icon: Icon, k = [], children }: { span: string; icon: LucideIcon; k?: string[]; children: ReactNode }) {
+function FeatureCard({ span, icon: Icon, k = [], children }: { span: string; icon: LucideIcon; k: string[] | undefined; children: ReactNode }) {
   return (
     <article className={`reveal group flex flex-col rounded-3xl border bg-card p-7 transition duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10 ${span}`}>
       <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/15 text-primary transition group-hover:rotate-6 group-hover:scale-110"><Icon className="size-5" aria-hidden /></span>
@@ -299,7 +299,7 @@ function Index() {
           <div className="mx-auto max-w-6xl px-6">
             <ScrollHeading className="text-4xl font-semibold">How it works</ScrollHeading>
             <ol className="scroll-timeline mt-10 grid gap-8 md:grid-cols-4">
-              <div className="timeline-track" aria-hidden="true" />
+              <li className="timeline-track" aria-hidden="true" role="presentation" />
               {["Answer 8 questions about your event.", "Review the plan Kindle drafts.", "Book vendors from the checklist and log payments.", "On the day, open Day-Of Mode. It works offline."].map((s, i) => (
                 <li key={s} className="reveal relative pl-16 md:pl-0">
                   <span className="absolute left-0 top-0 flex size-10 items-center justify-center rounded-full bg-primary font-display text-lg text-primary-foreground md:relative">{i + 1}</span>
