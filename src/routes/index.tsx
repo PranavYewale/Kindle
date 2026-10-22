@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Moon, Sun, Flame, Check, ArrowRight, SlidersHorizontal, CloudRain, HeartHandshake, FileSearch, Users, Heart, Cake, Building2, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -162,8 +162,8 @@ function Index() {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <a href="#pricing" className="hidden text-sm font-medium sm:inline">Log in</a>
-            <a href="#pricing" className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background">Start planning</a>
+            <Link to="/login" className="hidden text-sm font-medium sm:inline">Log in</Link>
+            <Link to="/register" className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background">Start planning</Link>
           </div>
         </nav>
       </header>
