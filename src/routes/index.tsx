@@ -4,6 +4,7 @@ import { Moon, Sun, Flame, Check, ArrowRight, SlidersHorizontal, CloudRain, Hear
 import type { ReactNode } from "react";
 import dashboard from "@/assets/dashboard.jpg";
 import { ScrollHeading, useScrollMotion } from "@/components/scroll-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const faqs = [
   ["Is Kindle only for weddings?", "No. Weddings, birthdays and community events are planned the same way: a budget, a dated timeline, a vendor checklist and personalised ideas. A 12-guest birthday and a 1,500-guest wedding both fit."],
