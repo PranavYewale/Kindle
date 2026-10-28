@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Flame, LayoutDashboard, Wallet, CalendarDays, ClipboardCheck, Lightbulb, LogOut, Plus, Heart, Cake, Building2, AlertTriangle, Check, type LucideIcon } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -42,21 +43,32 @@ function Dashboard() {
             <a key={l} href="#" className={`flex items-center gap-3 rounded-lg px-3 py-2 ${i === 0 ? "bg-accent font-medium text-accent-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}><I className="size-4" aria-hidden />{l}</a>
           ))}
         </nav>
-        <Link to="/login" className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted"><LogOut className="size-4" aria-hidden />Log out</Link>
+        <div className="mt-auto rounded-xl border bg-muted/50 p-3">
+          <div className="flex items-center gap-3">
+            <span className="relative grid size-10 shrink-0 place-items-center rounded-full bg-primary font-semibold text-primary-foreground">PS<span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-card bg-secondary" /></span>
+            <div className="min-w-0"><p className="truncate text-sm font-medium">Priya Sharma</p><p className="truncate text-xs text-muted-foreground">priya@example.com</p></div>
+          </div>
+          <Link to="/login" className="mt-3 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted-foreground hover:bg-card hover:text-foreground"><LogOut className="size-4" aria-hidden />Log out</Link>
+        </div>
       </aside>
 
-      <main className="flex-1 p-5 md:p-8">
-        <header className="flex flex-wrap items-center justify-between gap-4">
+      <main className="relative flex-1 overflow-hidden p-5 md:p-8">
+        <div aria-hidden className="animate-blob pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-primary/15 blur-3xl" />
+        <header className="animate-enter relative flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Good evening,</p>
-            <h1 className="text-3xl">Priya 👋</h1>
+            <h1 className="text-3xl">Priya <span className="animate-wiggle inline-block">👋</span></h1>
           </div>
+          <div className="flex items-center gap-2">
+          <span className="flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs text-muted-foreground"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-secondary opacity-70" /><span className="relative size-2 rounded-full bg-secondary" /></span>Live</span>
+          <ThemeToggle />
           <button className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-medium text-primary-foreground shadow-lg shadow-primary/25"><Plus className="size-4" aria-hidden />New event</button>
+          </div>
         </header>
 
         <section className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Your events">
-          {events.map((e) => (
-            <button key={e.id} onClick={() => setActiveId(e.id)} className={`rounded-2xl border bg-card p-5 text-left transition hover:-translate-y-0.5 ${e.id === activeId ? "border-primary ring-2 ring-primary/30" : ""}`}>
+          {events.map((e, n) => (
+            <button key={e.id} style={{ animationDelay: `${n * 100}ms` }} onClick={() => setActiveId(e.id)} className={`animate-enter rounded-2xl border bg-card p-5 text-left transition hover:-translate-y-0.5 ${e.id === activeId ? "border-primary ring-2 ring-primary/30" : ""}`}>
               <e.icon className="size-5 text-secondary" aria-hidden />
               <p className="mt-3 font-display text-lg font-bold">{e.name}</p>
               <p className="text-sm text-muted-foreground">{e.meta} · {e.days} days to go</p>
@@ -66,14 +78,14 @@ function Dashboard() {
 
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           <Card title="Budget" icon={Wallet}>
-            <p className="font-display text-3xl font-bold">{inr(ev.spent)}</p>
+            <p className="font-display text-3xl font-bold">{inr(useCount(ev.spent))}</p>
             <p className="text-sm text-muted-foreground">of {inr(ev.budget)} · {pct}% used</p>
             <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-muted"><div key={ev.id} className={`animate-grow h-full rounded-full ${pct > 75 ? "bg-destructive" : "bg-primary"}`} style={{ width: `${pct}%` }} /></div>
             {pct > 75 && <p className="mt-3 flex items-center gap-2 text-sm text-destructive"><AlertTriangle className="size-4" aria-hidden />Close to the limit — review food stalls</p>}
           </Card>
 
           <Card title="Timeline" icon={CalendarDays}>
-            <p className="font-display text-3xl font-bold">{ev.done}/{ev.tasks}</p>
+            <p className="font-display text-3xl font-bold">{useCount(ev.done)}/{ev.tasks}</p>
             <p className="text-sm text-muted-foreground">tasks done</p>
             <ul className="mt-4 grid gap-2 text-sm">
               {["Confirm venue", "Send invites", "Final headcount"].map((t, i) => (
@@ -102,7 +114,7 @@ function Dashboard() {
         <Card title="Personalised ideas" icon={Lightbulb} className="mt-4">
           <div className="grid gap-3 sm:grid-cols-3">
             {(ev.id === "w" ? ["Marathi-English bilingual vows card", "Live chaat counter instead of a 3rd dessert", "Sunset pheras on the lawn"] : ev.id === "b" ? ["Superhero training obstacle course", "DIY cupcake station", "Polaroid return gifts"] : ["Rangoli contest by building wing", "Local home-chef food stalls", "Kids' diya painting corner"]).map((t) => (
-              <p key={t} className="rounded-xl border bg-accent/40 p-4 text-sm">{t}</p>
+              <p key={t} className="relative overflow-hidden rounded-xl border bg-accent/40 p-4 text-sm"><span aria-hidden className="shimmer absolute inset-0" /><span className="relative">{t}</span></p>
             ))}
           </div>
         </Card>
@@ -113,9 +125,21 @@ function Dashboard() {
 
 function Card({ title, icon: I, children, className = "" }: { title: string; icon: LucideIcon; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-2xl border bg-card p-5 ${className}`}>
+    <section className={`animate-enter rounded-2xl border bg-card p-5 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/10 ${className}`} style={{ animationDelay: "250ms" }}>
       <h2 className="mb-4 flex items-center gap-2 text-base"><I className="size-4 text-primary" aria-hidden />{title}</h2>
       {children}
     </section>
   );
+}
+
+function useCount(target: number) {
+  const [v, setV] = useState(target);
+  useEffect(() => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { setV(target); return; }
+    let f = 0; const start = performance.now();
+    const tick = (t: number) => { const p = Math.min(1, (t - start) / 900); setV(Math.round(target * (1 - (1 - p) ** 3))); if (p < 1) f = requestAnimationFrame(tick); };
+    f = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(f);
+  }, [target]);
+  return v;
 }
