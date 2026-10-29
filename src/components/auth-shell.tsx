@@ -42,7 +42,7 @@ export function AuthShell({ title, sub, children, footer, panelSide = "left", sl
   );
 
   return (
-    <div className={`grid min-h-screen ${slideIn ? "animate-page-right" : "animate-page-left"}`}>
+    <div className={`grid min-h-screen lg:grid-cols-2 ${slideIn ? "animate-page-right" : "animate-page-left"}`}>
       {panelSide === "right" ? <>{main}{aside}</> : <>{aside}{main}</>}
     </div>
   );
