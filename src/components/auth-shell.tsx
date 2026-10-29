@@ -2,10 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Flame, Heart, Cake, Building2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import authBg from "@/assets/auth-bg.jpg";
 
 export function AuthShell({ title, sub, children, footer, panelSide = "left", slideIn = false }: { title: string; sub: string; children: ReactNode; footer: ReactNode; panelSide?: "left" | "right"; slideIn?: boolean }) {
   const aside = (
     <aside className={`relative hidden overflow-hidden bg-muted p-12 lg:flex lg:flex-col lg:justify-between ${slideIn ? "animate-enter-right" : ""}`}>
+      <img src={authBg} width={1024} height={1536} alt="" aria-hidden loading="lazy" className="absolute inset-0 size-full object-cover" />
+      <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/60 to-background/90" />
       <div aria-hidden className="animate-blob absolute -right-20 -top-20 size-96 rounded-full bg-primary/25 blur-3xl" />
       <div aria-hidden className="animate-blob absolute -bottom-24 -left-16 size-96 rounded-full bg-secondary/25 blur-3xl" style={{ animationDelay: "-7s" }} />
       <Link to="/" className="relative flex items-center gap-2 font-display text-2xl font-semibold"><Flame className="animate-wiggle size-6 text-primary" aria-hidden />Kindle</Link>
