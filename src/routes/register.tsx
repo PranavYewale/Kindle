@@ -18,7 +18,7 @@ export const Route = createFileRoute("/register")({
 function Register() {
   const navigate = useNavigate();
   return (
-    <AuthShell title="Start planning free" sub="Takes under a minute." footer={<>Already have an account? <Link to="/login" className="font-medium text-foreground underline">Log in</Link></>}>
+    <AuthShell title="Start planning free" sub="Takes under a minute." panelSide="right" slideIn footer={<>Already have an account? <Link to="/login" className="font-medium text-foreground underline">Log in</Link></>}>
       <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); navigate({ to: "/dashboard" }); }}>
         <Field label="Your name" name="name" autoComplete="name" required placeholder="Priya Sharma" />
         <Field label="Email" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />

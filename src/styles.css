@@ -163,9 +163,11 @@
 }
 
 @keyframes enter { from { opacity: 0; transform: translateY(18px) scale(.98) } to { opacity: 1; transform: none } }
+@keyframes enter-right { from { opacity: 0; transform: translateX(72px) } to { opacity: 1; transform: none } }
 @keyframes shimmer { from { background-position: -200% 0 } to { background-position: 200% 0 } }
 @keyframes wiggle { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-8deg) } 75% { transform: rotate(8deg) } }
 @utility animate-enter { animation: enter .7s cubic-bezier(.16,1,.3,1) both; }
+@utility animate-enter-right { animation: enter-right .8s cubic-bezier(.16,1,.3,1) both; }
 @utility animate-wiggle { animation: wiggle 2.4s ease-in-out infinite; }
 @utility shimmer {
   background: linear-gradient(110deg, transparent 30%, color-mix(in oklab, var(--primary) 18%, transparent) 50%, transparent 70%);
