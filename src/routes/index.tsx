@@ -153,7 +153,7 @@ function Index() {
       <main id="main">
         <section className="glow-hero relative overflow-hidden">
           <img src={heroBg} width={1920} height={1080} alt="" aria-hidden loading="lazy" className="pointer-events-none absolute inset-0 size-full object-cover" />
-          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/45 to-background" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background" />
           <div className="relative mx-auto max-w-6xl px-6 pb-16 pt-20 text-center md:pt-28">
             <p className="mx-auto max-w-xl text-sm font-semibold uppercase tracking-widest text-secondary">Weddings · Birthdays · Community events</p>
             <h1 className="mx-auto mt-4 max-w-4xl text-5xl font-semibold leading-[1.05] md:text-7xl">Plan the whole celebration in <em className="text-primary">one evening.</em></h1>
