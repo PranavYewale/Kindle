@@ -57,7 +57,6 @@ import {
   CheckCircle2,
   PanelLeftClose,
   PanelLeftOpen,
-  KeyRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -257,7 +256,6 @@ export function DashboardShell() {
     setIsDossierOpen,
     resetToSamplePlan,
     apiKey,
-    setIsAiKeyModalOpen,
   } = useDashboard();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -566,20 +564,6 @@ export function DashboardShell() {
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-2">
-            {/* AI Engine & API Key Setup */}
-            <button
-              onClick={() => setIsAiKeyModalOpen(true)}
-              className={`inline-flex items-center gap-1.5 rounded-xl border px-2.5 sm:px-3 py-1.5 text-xs font-bold transition shadow-2xs ${
-                apiKey
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
-                  : "bg-card text-foreground hover:bg-muted"
-              }`}
-              title="Configure Google Gemini API Key"
-            >
-              <KeyRound className="size-3.5 text-primary" />
-              <span className="hidden md:inline">{apiKey ? "AI Active" : "AI Key"}</span>
-            </button>
-
             {/* Master Plan Dossier / Print Button */}
             <button
               onClick={() => setIsDossierOpen(true)}

@@ -1,16 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDashboard } from "./dashboard-context";
-import {
-  Flame,
-  X,
-  Send,
-  Sparkles,
-  Bot,
-  User,
-  KeyRound,
-  ShieldCheck,
-  ChevronRight,
-} from "lucide-react";
+import { Flame, X, Send, Sparkles, Bot, User, ShieldCheck, ChevronRight } from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -290,7 +280,6 @@ export function ChatBot() {
     decisions,
     activeTab,
     apiKey,
-    setIsAiKeyModalOpen,
   } = useDashboard();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -465,28 +454,6 @@ export function ChatBot() {
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
-              {/* API Key Connection Button */}
-              <button
-                onClick={() => setIsAiKeyModalOpen(true)}
-                className={`flex items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold transition shadow-2xs ${
-                  apiKey
-                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20"
-                }`}
-                title="Configure Free AI Key"
-              >
-                <KeyRound className="size-3 shrink-0" />
-                <span className="hidden sm:inline">
-                  {apiKey
-                    ? apiKey.startsWith("gsk_")
-                      ? "Groq Free Active"
-                      : apiKey.startsWith("sk-or-")
-                        ? "OpenRouter Active"
-                        : "AI Active"
-                    : "Add Free Key"}
-                </span>
-              </button>
-
               <button
                 onClick={() => setIsOpen(false)}
                 className="grid size-8 place-items-center rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition"
@@ -564,13 +531,9 @@ export function ChatBot() {
                       </span>
                     )}
                     {(m.source === "gemini-error" || m.source === "provider-error") && (
-                      <button
-                        type="button"
-                        onClick={() => setIsAiKeyModalOpen(true)}
-                        className="text-[9px] font-semibold text-destructive hover:underline flex items-center gap-0.5"
-                      >
-                        Fix Key in Settings →
-                      </button>
+                      <span className="text-[9px] font-semibold text-destructive flex items-center gap-0.5">
+                        Provider error
+                      </span>
                     )}
                   </div>
                 </div>
