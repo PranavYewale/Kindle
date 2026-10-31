@@ -1996,9 +1996,17 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   // AI Key & Modal state
   const [apiKey, setApiKeyState] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("kindle_gemini_api_key") || "";
+      const stored = localStorage.getItem("kindle_gemini_api_key");
+      if (stored) return stored;
     }
-    return "";
+    const envKey =
+      (typeof import.meta !== "undefined" && import.meta.env
+        ? (import.meta.env["VITE_GROQ_API_KEY"] as string | undefined) ||
+          (import.meta.env["VITE_OPENROUTER_API_KEY"] as string | undefined) ||
+          (import.meta.env["VITE_GEMINI_API_KEY"] as string | undefined) ||
+          (import.meta.env["VITE_OPENAI_API_KEY"] as string | undefined)
+        : "") || "";
+    return envKey.trim();
   });
   const [isAiKeyModalOpen, setIsAiKeyModalOpen] = useState<boolean>(false);
 

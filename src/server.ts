@@ -51,6 +51,15 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Sync environment variables from cloud runtime (Vercel, Cloudflare, Nitro) into process.env
+      if (env && typeof env === "object") {
+        for (const [key, value] of Object.entries(env)) {
+          if (typeof value === "string" && !process.env[key]) {
+            process.env[key] = value;
+          }
+        }
+      }
+
       const url = new URL(request.url);
       if (url.pathname === "/api/send-email") {
         return await handleSendEmailRequest(request);

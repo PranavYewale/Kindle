@@ -119,13 +119,20 @@ export async function handleChatRequest(request: Request): Promise<Response> {
         request.headers.get("x-api-key") ||
         "",
     );
-    const serverGroqKey = cleanApiKey(process.env["GROQ_API_KEY"]);
-    const serverOpenRouterKey = cleanApiKey(process.env["OPENROUTER_API_KEY"]);
+    const serverGroqKey = cleanApiKey(
+      process.env["GROQ_API_KEY"] || process.env["VITE_GROQ_API_KEY"],
+    );
+    const serverOpenRouterKey = cleanApiKey(
+      process.env["OPENROUTER_API_KEY"] || process.env["VITE_OPENROUTER_API_KEY"],
+    );
     const serverGeminiKey = cleanApiKey(
       process.env["GEMINI_API_KEY"] || process.env["VITE_GEMINI_API_KEY"],
     );
     const serverOpenAIKey = cleanApiKey(
-      process.env["OPENAI_API_KEY"] || request.headers.get("x-openai-key") || "",
+      process.env["OPENAI_API_KEY"] ||
+        process.env["VITE_OPENAI_API_KEY"] ||
+        request.headers.get("x-openai-key") ||
+        "",
     );
 
     const effectiveKey = clientKey || headerKey;
