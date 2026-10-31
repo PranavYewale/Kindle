@@ -2,6 +2,10 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { handleSendEmailRequest } from "./server/email-service";
+import { handleGeneratePlanRequest } from "./server/ai-planner-service";
+import { handleChatRequest } from "./server/ai-chat-service";
+import { handleRealtimeAuditRequest } from "./server/realtime-audit-service";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -47,6 +51,20 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const url = new URL(request.url);
+      if (url.pathname === "/api/send-email") {
+        return await handleSendEmailRequest(request);
+      }
+      if (url.pathname === "/api/generate-plan") {
+        return await handleGeneratePlanRequest(request);
+      }
+      if (url.pathname === "/api/chat") {
+        return await handleChatRequest(request);
+      }
+      if (url.pathname === "/api/realtime-audit") {
+        return await handleRealtimeAuditRequest(request);
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

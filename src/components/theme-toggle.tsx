@@ -16,7 +16,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     localStorage.setItem("theme", d ? "dark" : "light");
   };
   return (
-    <button onClick={toggle} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"} className={`rounded-full p-2 text-muted-foreground transition hover:rotate-12 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring ${className}`}>
+    <button
+      onClick={toggle}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      className={`rounded-full p-2 text-muted-foreground transition hover:rotate-12 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring ${className}`}
+    >
       {dark ? <Sun className="size-5" /> : <Moon className="size-5" />}
     </button>
   );
