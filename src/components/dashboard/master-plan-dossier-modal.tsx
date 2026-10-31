@@ -1,0 +1,454 @@
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useDashboard } from "./dashboard-context";
+import {
+  Printer,
+  Share2,
+  Check,
+  X,
+  Flame,
+  Calendar,
+  MapPin,
+  Users,
+  Wallet,
+  ShieldCheck,
+  Building,
+  UtensilsCrossed,
+  Sparkles,
+  Phone,
+  Download,
+  FileDown,
+} from "lucide-react";
+
+interface MasterPlanDossierModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function MasterPlanDossierModal({
+  isOpen: propIsOpen,
+  onClose: propOnClose,
+}: MasterPlanDossierModalProps = {}) {
+  const {
+    eventName,
+    eventType,
+    eventCity,
+    eventDate,
+    daysRemaining,
+    totalBudget,
+    totalCommitted,
+    totalPaid,
+    decisions,
+    milestones,
+    categories,
+    eventSpots,
+    guests,
+    dietCounts,
+    risks,
+    lang,
+    isDossierOpen: contextIsOpen,
+    setIsDossierOpen: setContextIsOpen,
+  } = useDashboard();
+
+  const [copied, setCopied] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Determine open state: prop takes precedence if provided, otherwise context
+  const isOpen = propIsOpen !== undefined ? propIsOpen : contextIsOpen;
+  const handleClose = () => {
+    if (propOnClose) {
+      propOnClose();
+    } else {
+      setContextIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  if (!mounted || !isOpen) return null;
+
+  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+  const handlePrint = () => {
+    // Small delay ensures DOM is settled before triggering native print dialog
+    setTimeout(() => {
+      window.print();
+    }, 50);
+  };
+
+  const getDossierRawText = () => {
+    return [
+      `=============================================================`,
+      `👑 ${eventName.toUpperCase()} — MASTER EVENT DOSSIER`,
+      `   Kindle Zero-Panic Event Management Suite`,
+      `=============================================================`,
+      `📅 Event Date: ${eventDate} (T-${daysRemaining} days remaining)`,
+      `📍 Destination / City: ${eventCity}`,
+      `👥 Total RSVP Headcount: ${guests.length} guests`,
+      `💰 Budget Overview:`,
+      `   • Total Allocated: ${inr(totalBudget)}`,
+      `   • Committed Spend: ${inr(totalCommitted)}`,
+      `   • Paid Advances:   ${inr(totalPaid)}`,
+      `   • Safety Buffer:   ${inr(totalBudget - totalCommitted)}`,
+      ``,
+      `-------------------------------------------------------------`,
+      `🏰 KEY EVENT VENUES & STAYS:`,
+      `-------------------------------------------------------------`,
+      ...eventSpots.map(
+        (s, idx) =>
+          `[${idx + 1}] ${s.name} (${s.category.toUpperCase()})\n` +
+          `    Address: ${s.address}\n` +
+          `    Google Maps: https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}\n` +
+          (s.phone ? `    Phone: ${s.phone}\n` : "") +
+          (s.capacityOrRooms ? `    Capacity: ${s.capacityOrRooms}\n` : ""),
+      ),
+      ``,
+      `-------------------------------------------------------------`,
+      `🍽️ KITCHEN MASTER CATERING DIETARY BREAKDOWN:`,
+      `-------------------------------------------------------------`,
+      `• Strict Jain:                 ${dietCounts["Strict Jain"]} plates`,
+      `• Satvik (No Onion / Garlic):  ${dietCounts["Satvik (No Onion/Garlic)"]} plates`,
+      `• Pure Vegetarian:             ${dietCounts["Vegetarian"]} plates`,
+      `• Halal:                       ${dietCounts["Halal"]} plates`,
+      `• Vegan:                       ${dietCounts["Vegan"]} plates`,
+      `• Regular / Non-Veg:           ${dietCounts["Regular"]} plates`,
+      ``,
+      `-------------------------------------------------------------`,
+      `⏱️ MASTER MILESTONE TIMELINE:`,
+      `-------------------------------------------------------------`,
+      ...milestones.map(
+        (m, idx) =>
+          `[${idx + 1}] ${m.date} — ${m.title}\n` +
+          `    Lead: ${m.owner} | Status: ${m.status.toUpperCase()}\n` +
+          `    Details: ${m.description || "N/A"}`,
+      ),
+      ``,
+      `-------------------------------------------------------------`,
+      `🛡️ ACTIVE EMERGENCY CONTINGENCIES (MURPHY REHEARSAL):`,
+      `-------------------------------------------------------------`,
+      ...risks
+        .filter((r) => r.mitigated)
+        .map(
+          (r, idx) =>
+            `[${idx + 1}] Risk: ${r.title}\n` +
+            `    Plan B Protocol: ${r.planB}\n` +
+            `    Emergency Owner: ${r.owner}`,
+        ),
+      ``,
+      `=============================================================`,
+      `Generated by Kindle Event Studio · Zero-Panic Family Command`,
+      `=============================================================`,
+    ].join("\n");
+  };
+
+  const handleDownloadFile = () => {
+    const text = getDossierRawText();
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const safeName = eventName.replace(/[^a-zA-Z0-9_-]/g, "_");
+    link.href = url;
+    link.download = `${safeName}_Master_Dossier.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setDownloaded(true);
+    setTimeout(() => setDownloaded(false), 2500);
+  };
+
+  const handleCopyWhatsApp = () => {
+    const text = [
+      `👑 *${eventName.toUpperCase()} — MASTER EVENT DOSSIER*`,
+      `📅 Date: ${eventDate} (T-${daysRemaining} days)`,
+      `📍 Destination: ${eventCity}`,
+      `👥 Expected Guests: ${guests.length} RSVP Tracked`,
+      `💰 Budget: ${inr(totalBudget)} (${inr(totalCommitted)} committed, ${inr(totalPaid)} paid)`,
+      ``,
+      `🏰 *KEY LOCATIONS & SPOT LINKS:*`,
+      ...eventSpots.map(
+        (s) =>
+          `• [${s.category.toUpperCase()}] ${s.name} - ${s.address}\n  Maps: https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`,
+      ),
+      ``,
+      `🍽️ *KITCHEN DIETARY SPLIT:*`,
+      `• Strict Jain: ${dietCounts["Strict Jain"]} plates`,
+      `• Satvik (No Onion/Garlic): ${dietCounts["Satvik (No Onion/Garlic)"]} plates`,
+      `• Pure Vegetarian: ${dietCounts["Vegetarian"]} plates`,
+      `• Halal: ${dietCounts["Halal"]} plates`,
+      `• Regular / Non-Veg: ${dietCounts["Regular"]} plates`,
+      ``,
+      `⏱️ *TOP UPCOMING MILESTONES:*`,
+      ...milestones.slice(0, 5).map((m) => `• ${m.date}: ${m.title} (Lead: ${m.owner})`),
+      ``,
+      `🛡️ *EMERGENCY PLAN B PROTOCOLS ACTIVE:*`,
+      ...risks
+        .filter((r) => r.mitigated)
+        .slice(0, 3)
+        .map((r) => `• ${r.title}: ${r.planB}`),
+      ``,
+      `Generated by Kindle Event Suite · Zero-Panic Family Command Center`,
+    ].join("\n");
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const modalNode = (
+    <div id="master-dossier-portal">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dossier-modal-title"
+        className="dossier-backdrop fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-3 sm:p-6 backdrop-blur-md overflow-y-auto"
+      >
+        <div className="dossier-modal-content relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border bg-card p-6 sm:p-10 shadow-2xl text-foreground space-y-7">
+          {/* Controls Bar (Always hidden in Print) */}
+          <div className="dossier-no-print flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+            <div className="flex items-center gap-2">
+              <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Flame className="size-4" />
+              </div>
+              <div>
+                <h2
+                  id="dossier-modal-title"
+                  className="font-display text-base sm:text-lg font-bold"
+                >
+                  {lang === "hi"
+                    ? "मास्टर इवेंट डॉसियर (प्रिंट व शेयर)"
+                    : "Official Master Event Dossier"}
+                </h2>
+                <p className="text-[11px] text-muted-foreground">
+                  Ready for Elders, Banquet Managers, and Vendors
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Native Print / Save to PDF */}
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/90 transition active:scale-95"
+                title="Print or Save as PDF"
+              >
+                <Printer className="size-4" />
+                <span>Print / Save PDF</span>
+              </button>
+
+              {/* Instant Text File Export */}
+              <button
+                onClick={handleDownloadFile}
+                className="inline-flex items-center gap-1.5 rounded-xl border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted transition"
+                title="Download offline text dossier"
+              >
+                {downloaded ? (
+                  <Check className="size-4 text-emerald-500" />
+                ) : (
+                  <FileDown className="size-4 text-primary" />
+                )}
+                <span className="hidden sm:inline">
+                  {downloaded ? "Downloaded!" : "Download .TXT"}
+                </span>
+              </button>
+
+              {/* WhatsApp Share */}
+              <button
+                onClick={handleCopyWhatsApp}
+                className="inline-flex items-center gap-1.5 rounded-xl border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted transition"
+                title="Copy WhatsApp formatted summary"
+              >
+                {copied ? (
+                  <Check className="size-4 text-emerald-500" />
+                ) : (
+                  <Share2 className="size-4" />
+                )}
+                <span className="hidden sm:inline">{copied ? "Copied!" : "WhatsApp Copy"}</span>
+              </button>
+
+              {/* Close Modal */}
+              <button
+                onClick={handleClose}
+                className="rounded-xl border p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition ml-1"
+                title="Close (Esc)"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Dossier Header Info */}
+          <div className="dossier-section border-b pb-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="dossier-brand-badge inline-block rounded-full bg-primary/10 border border-primary/20 px-3 py-0.5 text-xs font-bold text-primary uppercase tracking-widest">
+                  Kindle Certified Master Plan
+                </span>
+                <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground mt-2">
+                  {eventName}
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                  {eventCity} · Scheduled for {eventDate} ·{" "}
+                  <strong className="text-primary font-mono font-bold">
+                    T-{daysRemaining} Days to Go
+                  </strong>
+                </p>
+              </div>
+
+              <div className="dossier-card rounded-2xl border bg-muted/30 p-4 text-left sm:text-right shrink-0">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                  Total Allocated Treasury
+                </span>
+                <p className="font-display text-2xl font-extrabold text-primary mt-0.5">
+                  {inr(totalBudget)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Committed: <strong>{inr(totalCommitted)}</strong> · Paid:{" "}
+                  <strong>{inr(totalPaid)}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 1: Key Venue & Stay Locations */}
+          <div className="dossier-section space-y-3">
+            <h3 className="font-display text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+              <MapPin className="size-4 text-primary" />
+              <span>Key Event Venues & Guest Accommodations</span>
+            </h3>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {eventSpots.map((spot) => (
+                <div
+                  key={spot.id}
+                  className="dossier-card rounded-2xl border bg-muted/20 p-3.5 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {spot.category}
+                    </span>
+                    {spot.capacityOrRooms && (
+                      <span className="text-xs font-bold text-primary font-mono">
+                        {spot.capacityOrRooms}
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="font-display text-sm font-bold text-foreground">{spot.name}</h4>
+                  <p className="text-xs text-muted-foreground">{spot.address}</p>
+                  {spot.phone && <p className="text-xs text-muted-foreground">📞 {spot.phone}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Catering Dietary Breakdown for Kitchen Master */}
+          <div className="dossier-section dossier-card rounded-2xl border bg-muted/20 p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+                <UtensilsCrossed className="size-4 text-primary" />
+                <span>Kitchen Master Catering Diet Breakdown</span>
+              </h3>
+              <span className="text-xs font-bold font-mono text-primary">
+                Total RSVPs: {guests.length} Plates
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              {Object.entries(dietCounts).map(([diet, count]) => (
+                <div key={diet} className="rounded-xl border bg-card p-2.5 text-center shadow-2xs">
+                  <span className="font-display text-lg sm:text-xl font-extrabold text-foreground block">
+                    {count}
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-muted-foreground mt-0.5 block leading-tight">
+                    {diet}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 3: Key Milestone Timeline Sequence */}
+          <div className="dossier-section space-y-3">
+            <h3 className="font-display text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+              <Calendar className="size-4 text-primary" />
+              <span>Master Milestone Schedule</span>
+            </h3>
+
+            <div className="divide-y rounded-2xl border bg-card overflow-hidden">
+              {milestones.map((m, idx) => (
+                <div
+                  key={m.id}
+                  className="dossier-avoid-break p-3 sm:p-3.5 flex items-center justify-between gap-4 text-xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold text-muted-foreground w-6">
+                      #{idx + 1}
+                    </span>
+                    <div>
+                      <h5 className="font-display text-xs sm:text-sm font-bold text-foreground">
+                        {m.title}
+                      </h5>
+                      <p className="text-[11px] text-muted-foreground">{m.description}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <strong className="font-mono text-primary font-bold block">{m.date}</strong>
+                    <span className="text-[10px] sm:text-[11px] text-muted-foreground">
+                      Lead: {m.owner}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 4: Emergency Contingency Plan B Protocols */}
+          <div className="dossier-section rounded-2xl border bg-rose-500/5 border-rose-500/20 p-4 sm:p-5 space-y-3">
+            <h3 className="font-display text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+              <ShieldCheck className="size-4 text-rose-600 dark:text-rose-400" />
+              <span>Active Emergency Backup Protocols (Murphy Rehearsal)</span>
+            </h3>
+
+            <div className="grid gap-2.5 sm:grid-cols-2 text-xs">
+              {risks
+                .filter((r) => r.mitigated)
+                .slice(0, 4)
+                .map((r) => (
+                  <div
+                    key={r.id}
+                    className="dossier-avoid-break rounded-xl border bg-card p-3 space-y-1"
+                  >
+                    <p className="font-bold text-foreground">{r.title}</p>
+                    <p className="text-muted-foreground text-[11px]">{r.planB}</p>
+                    <p className="text-[10px] text-primary font-bold">Owner: {r.owner}</p>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Footer Note */}
+          <div className="border-t pt-4 text-center text-xs text-muted-foreground">
+            <p>Generated via Kindle Event Studio · Zero-Panic Family Command Center.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return createPortal(modalNode, document.body);
+}
