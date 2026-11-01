@@ -569,6 +569,7 @@ export function EventWizardModal() {
   const [isExitingToDashboard, setIsExitingToDashboard] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
   const hasLaunchedRef = React.useRef<boolean>(false);
+  const handleLaunchRef = React.useRef<() => void>(() => {});
 
   useEffect(() => {
     if (!isWizardOpen) {
@@ -634,7 +635,7 @@ export function EventWizardModal() {
       }, 1000);
 
       const timer = setTimeout(() => {
-        handleLaunchDashboard();
+        handleLaunchRef.current();
       }, 5000);
 
       return () => {
@@ -814,6 +815,7 @@ export function EventWizardModal() {
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80"
     );
   };
+  handleLaunchRef.current = handleLaunchDashboard;
 
   return (
     <div

@@ -220,6 +220,7 @@ export function EventMapPlanner() {
         leafletMapRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventCity]);
 
   // Re-render markers whenever eventSpots changes
@@ -231,6 +232,7 @@ export function EventMapPlanner() {
       renderMarkers(L, leafletMapRef.current, markersLayerRef.current);
     }
     updateMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventSpots, selectedSpotId]);
 
   // Render styled markers with custom HTML DivIcons

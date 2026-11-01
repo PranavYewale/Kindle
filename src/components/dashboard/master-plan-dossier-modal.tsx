@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useDashboard } from "./dashboard-context";
 import {
@@ -56,13 +56,13 @@ export function MasterPlanDossierModal({
 
   // Determine open state: prop takes precedence if provided, otherwise context
   const isOpen = propIsOpen !== undefined ? propIsOpen : contextIsOpen;
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (propOnClose) {
       propOnClose();
     } else {
       setContextIsOpen(false);
     }
-  };
+  }, [propOnClose, setContextIsOpen]);
 
   useEffect(() => {
     setMounted(true);
@@ -78,7 +78,7 @@ export function MasterPlanDossierModal({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   if (!mounted || !isOpen) return null;
 
