@@ -348,6 +348,7 @@ export function DashboardShell() {
                 onClick={() => setIsSidebarCollapsed(true)}
                 className="grid size-7 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition"
                 title="Collapse Sidebar"
+                aria-label="Collapse Sidebar"
               >
                 <PanelLeftClose className="size-4" />
               </button>
@@ -357,6 +358,7 @@ export function DashboardShell() {
               onClick={() => setIsSidebarCollapsed(false)}
               className="grid size-8 place-items-center rounded-xl border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground transition"
               title="Expand Sidebar"
+              aria-label="Expand Sidebar"
             >
               <PanelLeftOpen className="size-4 text-primary" />
             </button>
@@ -528,6 +530,7 @@ export function DashboardShell() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="grid size-9 place-items-center rounded-xl border bg-card text-foreground lg:hidden"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
               {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
@@ -537,6 +540,7 @@ export function DashboardShell() {
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               className="hidden lg:grid size-9 place-items-center rounded-xl border bg-card text-muted-foreground hover:text-foreground hover:bg-muted transition shadow-2xs"
               title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              aria-label={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
               {isSidebarCollapsed ? (
                 <PanelLeftOpen className="size-4.5 text-primary" />

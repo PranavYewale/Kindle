@@ -562,6 +562,11 @@ export function StreamlinedOverview() {
                         <button
                           onClick={() => toggleMilestoneStatus(m.id)}
                           title={isCompleted ? "Mark incomplete" : "Mark milestone completed"}
+                          aria-label={
+                            isCompleted
+                              ? `Mark milestone ${m.title} as incomplete`
+                              : `Mark milestone ${m.title} as completed`
+                          }
                           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold transition active:scale-95 ${
                             isCompleted
                               ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30"
@@ -707,6 +712,7 @@ export function StreamlinedOverview() {
                     setSelectedRoadmapNode(null);
                   }}
                   className="rounded-full p-1.5 text-muted-foreground hover:bg-muted transition"
+                  aria-label="Close date modal"
                 >
                   <X className="size-4" />
                 </button>

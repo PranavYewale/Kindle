@@ -458,6 +458,7 @@ export function ChatBot() {
                 onClick={() => setIsOpen(false)}
                 className="grid size-8 place-items-center rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition"
                 title="Close Chat"
+                aria-label="Close Kindle AI Chat"
               >
                 <X className="size-4" />
               </button>
@@ -584,6 +585,7 @@ export function ChatBot() {
               />
               <button
                 type="submit"
+                aria-label="Send message"
                 className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition shadow-2xs"
               >
                 <Send className="size-4" />

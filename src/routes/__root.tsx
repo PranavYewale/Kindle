@@ -90,6 +90,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Kindle — Autonomous Milestone Event Planning Engine" },
+      {
+        name: "description",
+        content:
+          "Autonomous celebration co-pilot for multi-day weddings, milestone birthdays, and community festivals. Dynamic timeline cascading, vendor contract intelligence, and predictive risk simulation.",
+      },
+      { name: "theme-color", content: "#d97706" },
+      { property: "og:title", content: "Kindle — Autonomous Milestone Event Planning Engine" },
+      {
+        property: "og:description",
+        content:
+          "Autonomous celebration co-pilot for weddings, jubilee milestones, and festivals. Timeline cascades, vendor negotiations, and risk simulation.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
