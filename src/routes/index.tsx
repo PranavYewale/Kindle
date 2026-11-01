@@ -46,9 +46,9 @@ export const Route = createFileRoute("/")({
 
 function Cta({ children = "Start planning free" }: { children?: string }) {
   return (
-    <a href="#pricing" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+    <Link to="/login" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
       {children} <ArrowRight className="size-4" />
-    </a>
+    </Link>
   );
 }
 

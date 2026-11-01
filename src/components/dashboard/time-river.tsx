@@ -103,6 +103,7 @@ export function TimeRiver() {
     lang,
     milestones,
     updateMilestoneDate,
+    toggleMilestoneStatus,
     shiftDownstreamDays,
     addMilestone,
     deleteMilestone,
@@ -311,8 +312,10 @@ export function TimeRiver() {
                   >
                     {/* Glowing Waypoint Node along the River Stream */}
                     <div className="absolute -top-16 left-8 flex flex-col items-center z-20">
-                      <div
-                        className={`grid size-10 place-items-center rounded-full font-display text-sm font-bold shadow-lg border-2 border-card transition-transform group-hover:scale-110 ${
+                      <button
+                        onClick={() => toggleMilestoneStatus(m.id)}
+                        title={isCompleted ? "Click to mark incomplete" : "Click to mark complete"}
+                        className={`grid size-10 place-items-center rounded-full font-display text-sm font-bold shadow-lg border-2 border-card transition-transform group-hover:scale-110 active:scale-95 cursor-pointer ${
                           isCompleted
                             ? "bg-emerald-500 text-white"
                             : isInProgress
@@ -321,7 +324,7 @@ export function TimeRiver() {
                         }`}
                       >
                         {isCompleted ? "✓" : idx + 1}
-                      </div>
+                      </button>
                       <div className="h-6 w-0.5 bg-border mt-0.5" />
                     </div>
 
@@ -447,15 +450,27 @@ export function TimeRiver() {
                         </div>
                       ) : (
                         <div className="flex items-center justify-between gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingMilestoneId(m.id);
-                              setNewDateVal(m.date);
-                            }}
-                            className="text-xs font-bold text-primary hover:underline py-1"
-                          >
-                            Edit Deadline
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => toggleMilestoneStatus(m.id)}
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold transition active:scale-95 ${
+                                isCompleted
+                                  ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                                  : "bg-muted text-muted-foreground border hover:text-foreground hover:border-primary"
+                              }`}
+                            >
+                              {isCompleted ? "✓ Completed" : "Mark Done"}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingMilestoneId(m.id);
+                                setNewDateVal(m.date);
+                              }}
+                              className="text-xs font-bold text-primary hover:underline py-1"
+                            >
+                              Edit Deadline
+                            </button>
+                          </div>
 
                           {m.dependentIds.length > 0 && (
                             <div className="flex items-center gap-1.5">

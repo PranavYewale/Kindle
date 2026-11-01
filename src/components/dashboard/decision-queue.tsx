@@ -27,8 +27,8 @@ export function DecisionQueue() {
 
   const filteredDecisions = decisions
     .filter((d) => {
-      if (selectedFilter === "pending") return d.lockedOptionId === null;
-      if (selectedFilter === "locked") return d.lockedOptionId !== null;
+      if (selectedFilter === "pending") return !d.lockedOptionId;
+      if (selectedFilter === "locked") return Boolean(d.lockedOptionId);
       return true;
     })
     .sort((a, b) => {
@@ -106,7 +106,7 @@ export function DecisionQueue() {
       {/* Decision Cards List */}
       <div className="space-y-6">
         {filteredDecisions.map((decision, index) => {
-          const isLocked = decision.lockedOptionId !== null;
+          const isLocked = Boolean(decision.lockedOptionId);
           return (
             <div
               key={decision.id}
@@ -164,11 +164,13 @@ export function DecisionQueue() {
                       className={`group/opt relative flex flex-col justify-between overflow-hidden rounded-3xl border transition-all ${
                         isThisOptionLocked
                           ? "border-emerald-500 bg-card ring-2 ring-emerald-500/30 shadow-md"
-                          : "border-border bg-card/60 hover:border-primary/40 hover:bg-card shadow-xs"
+                          : isLocked
+                            ? "border-border/60 bg-muted/15 opacity-75 hover:opacity-100 shadow-xs"
+                            : "border-border bg-card/60 hover:border-primary/40 hover:bg-card shadow-xs"
                       }`}
                     >
                       {/* Option Header Photo Banner for Instant Visual Recognition */}
-                      <div className="relative h-36 w-full overflow-hidden border-b bg-muted/40">
+                      <div className="relative h-36 w-full overflow-hidden border-b bg-muted/40 shrink-0">
                         <img
                           src={option.image}
                           alt={option.name}
@@ -177,12 +179,21 @@ export function DecisionQueue() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
 
-                        {option.aiRecommended && (
+                        {isThisOptionLocked ? (
+                          <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white shadow-md backdrop-blur-md">
+                            <CheckCircle2 className="size-3.5" />
+                            <span>Confirmed Choice</span>
+                          </div>
+                        ) : isLocked ? (
+                          <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white/80 backdrop-blur-md">
+                            <span>Alternative Option</span>
+                          </div>
+                        ) : option.aiRecommended ? (
                           <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground shadow-md backdrop-blur-md">
                             <Sparkles className="size-3" />
                             <span>AI Recommended Best Value</span>
                           </div>
-                        )}
+                        ) : null}
 
                         <div className="absolute bottom-2.5 right-3 rounded-xl border border-white/20 bg-black/70 px-3 py-1 font-display text-sm font-bold text-white backdrop-blur-md shadow-xs">
                           {inr(option.price)}
@@ -190,14 +201,16 @@ export function DecisionQueue() {
                         </div>
                       </div>
 
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h3 className="font-display text-base font-bold text-foreground leading-snug">
+                      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between min-w-0">
+                        <div className="space-y-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-display text-base font-bold text-foreground leading-snug break-words">
                                 {option.name}
                               </h3>
-                              <p className="text-xs text-muted-foreground">{option.vendorName}</p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {option.vendorName}
+                              </p>
                             </div>
                             <div className="flex items-center gap-1 rounded-lg bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 shrink-0">
                               <Star className="size-3 fill-amber-500" />
@@ -207,58 +220,75 @@ export function DecisionQueue() {
                               </span>
                             </div>
                           </div>
+
+                          {/* Pros & Cons */}
+                          <div className="space-y-2 border-t pt-3 text-xs">
+                            <div className="space-y-1">
+                              {option.pros.map((pro, pIdx) => (
+                                <p
+                                  key={pIdx}
+                                  className="flex items-start gap-1.5 text-emerald-700 dark:text-emerald-400 break-words"
+                                >
+                                  <ThumbsUp className="size-3 shrink-0 mt-0.5" />
+                                  <span>{pro}</span>
+                                </p>
+                              ))}
+                            </div>
+                            <div className="space-y-1">
+                              {option.cons.map((con, cIdx) => (
+                                <p
+                                  key={cIdx}
+                                  className="flex items-start gap-1.5 text-muted-foreground break-words"
+                                >
+                                  <ThumbsDown className="size-3 shrink-0 mt-0.5" />
+                                  <span>{con}</span>
+                                </p>
+                              ))}
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Pros & Cons */}
-                        <div className="mt-4 space-y-2 border-t pt-3 text-xs">
-                          <div className="space-y-1">
-                            {option.pros.map((pro, pIdx) => (
-                              <p
-                                key={pIdx}
-                                className="flex items-start gap-1.5 text-emerald-700 dark:text-emerald-400"
+                        {/* Lock Choice Action cleanly inside padded container */}
+                        <div className="mt-5 border-t pt-4">
+                          {isThisOptionLocked ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                <CheckCircle2 className="size-4 shrink-0" /> Locked & Confirmed
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => lockDecision(decision.id, null)}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground underline underline-offset-4 transition"
                               >
-                                <ThumbsUp className="size-3 shrink-0 mt-0.5" />
-                                <span>{pro}</span>
-                              </p>
-                            ))}
-                          </div>
-                          <div className="space-y-1">
-                            {option.cons.map((con, cIdx) => (
-                              <p
-                                key={cIdx}
-                                className="flex items-start gap-1.5 text-muted-foreground"
+                                <Unlock className="size-3" />
+                                Unlock to change
+                              </button>
+                            </div>
+                          ) : isLocked ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs text-muted-foreground font-medium">
+                                Alternative (Not chosen)
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => lockDecision(decision.id, option.id)}
+                                className="inline-flex items-center gap-1 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition shadow-2xs"
                               >
-                                <ThumbsDown className="size-3 shrink-0 mt-0.5" />
-                                <span>{con}</span>
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Lock Choice Action */}
-                      <div className="mt-5 border-t pt-4">
-                        {isThisOptionLocked ? (
-                          <div className="flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                              <CheckCircle2 className="size-4" /> Locked & Confirmed
-                            </span>
+                                <span>Switch to this</span>
+                                <ArrowRight className="size-3" />
+                              </button>
+                            </div>
+                          ) : (
                             <button
-                              onClick={() => lockDecision(decision.id, "")}
-                              className="text-xs font-medium text-muted-foreground hover:text-foreground underline"
+                              type="button"
+                              onClick={() => lockDecision(decision.id, option.id)}
+                              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-primary/20 active:scale-95"
                             >
-                              Unlock to change
+                              <Lock className="size-3.5" />
+                              <span>Lock Choice & Claim Price Guarantee</span>
                             </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => lockDecision(decision.id, option.id)}
-                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-primary/20 active:scale-95"
-                          >
-                            <Lock className="size-3.5" />
-                            <span>Lock Choice & Claim Price Guarantee</span>
-                          </button>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   );

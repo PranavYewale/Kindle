@@ -38,7 +38,7 @@ export interface Decision {
   downstreamImpacts: number;
   options: DecisionOption[];
   lockedOptionId: string | null;
-  lockedAt?: string;
+  lockedAt?: string | undefined;
 }
 
 export interface MilestoneTask {
@@ -54,6 +54,7 @@ export interface MilestoneTask {
   status: "completed" | "in_progress" | "pending";
   dependentIds: string[];
   description?: string;
+  autoCompleted?: boolean | undefined;
 }
 
 export interface BudgetCategory {
@@ -251,6 +252,8 @@ interface DashboardContextType {
   eventName: string;
   eventCity: string;
   eventDate: string;
+  setEventDate: (date: string) => void;
+  updateEventDate: (date: string) => void;
   daysRemaining: number;
 
   // Questionnaire / Setup Wizard
@@ -272,13 +275,15 @@ interface DashboardContextType {
 
   // 1. Decisions
   decisions: Decision[];
-  lockDecision: (decisionId: string, optionId: string) => void;
+  lockDecision: (decisionId: string, optionId: string | null) => void;
   readinessPercentage: number;
   confettiTrigger: number;
 
   // 2. Timeline
   milestones: MilestoneTask[];
   updateMilestoneDate: (id: string, newDate: string) => void;
+  toggleMilestoneStatus: (id: string) => void;
+  setMilestoneStatus: (id: string, status: "completed" | "in_progress" | "pending") => void;
   shiftDownstreamDays: (fromMilestoneId: string, daysShift: number) => void;
   addMilestone: (milestone: Omit<MilestoneTask, "id">) => void;
   deleteMilestone: (id: string) => void;
@@ -2232,16 +2237,104 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 1. Lock Decision with celebration
-  const lockDecision = (decisionId: string, optionId: string) => {
+  // 1. Lock Decision with celebration (or unlock if optionId is empty) & smart milestone auto-completion
+  const lockDecision = (decisionId: string, optionId: string | null) => {
+    const finalOptionId = optionId && optionId.trim() ? optionId.trim() : null;
     setDecisions((prev) =>
-      prev.map((d) =>
-        d.id === decisionId
-          ? { ...d, lockedOptionId: optionId, lockedAt: new Date().toISOString() }
-          : d,
-      ),
+      prev.map((d) => {
+        if (d.id !== decisionId) return d;
+        if (finalOptionId) {
+          return {
+            ...d,
+            lockedOptionId: finalOptionId,
+            lockedAt: new Date().toISOString(),
+          };
+        }
+        return {
+          ...d,
+          lockedOptionId: null,
+          lockedAt: undefined,
+        };
+      }),
     );
-    setConfettiTrigger((c) => c + 1);
+
+    if (finalOptionId) {
+      setConfettiTrigger((c) => c + 1);
+
+      // Auto-complete corresponding milestone when key decision is locked
+      setMilestones((prev) =>
+        prev.map((m) => {
+          const isVenueMatch =
+            (decisionId === "dec-1" || decisionId.toLowerCase().includes("venue")) &&
+            (m.id === "m-1" ||
+              m.category.toLowerCase().includes("venue") ||
+              m.title.toLowerCase().includes("venue"));
+          const isCateringMatch =
+            (decisionId === "dec-2" || decisionId.toLowerCase().includes("catering")) &&
+            (m.id === "m-3" ||
+              m.category.toLowerCase().includes("catering") ||
+              m.category.toLowerCase().includes("food") ||
+              m.title.toLowerCase().includes("cater"));
+          const isDjMatch =
+            (decisionId === "dec-4" ||
+              decisionId.toLowerCase().includes("dj") ||
+              decisionId.toLowerCase().includes("sound")) &&
+            (m.id === "m-4" ||
+              m.category.toLowerCase().includes("sound") ||
+              m.title.toLowerCase().includes("dj") ||
+              m.title.toLowerCase().includes("sound"));
+          const isPhotoMatch =
+            (decisionId === "dec-3" || decisionId.toLowerCase().includes("photo")) &&
+            (m.category.toLowerCase().includes("photo") || m.title.toLowerCase().includes("photo"));
+
+          if (isVenueMatch || isCateringMatch || isDjMatch || isPhotoMatch) {
+            return {
+              ...m,
+              status: "completed" as const,
+              autoCompleted: true,
+            };
+          }
+          return m;
+        }),
+      );
+    } else {
+      // If decision was unlocked, revert auto-completed milestone back
+      setMilestones((prev) =>
+        prev.map((m) => {
+          const isVenueMatch =
+            (decisionId === "dec-1" || decisionId.toLowerCase().includes("venue")) &&
+            (m.id === "m-1" ||
+              m.category.toLowerCase().includes("venue") ||
+              m.title.toLowerCase().includes("venue"));
+          const isCateringMatch =
+            (decisionId === "dec-2" || decisionId.toLowerCase().includes("catering")) &&
+            (m.id === "m-3" ||
+              m.category.toLowerCase().includes("catering") ||
+              m.category.toLowerCase().includes("food") ||
+              m.title.toLowerCase().includes("cater"));
+          const isDjMatch =
+            (decisionId === "dec-4" ||
+              decisionId.toLowerCase().includes("dj") ||
+              decisionId.toLowerCase().includes("sound")) &&
+            (m.id === "m-4" ||
+              m.category.toLowerCase().includes("sound") ||
+              m.title.toLowerCase().includes("dj") ||
+              m.title.toLowerCase().includes("sound"));
+          const isPhotoMatch =
+            (decisionId === "dec-3" || decisionId.toLowerCase().includes("photo")) &&
+            (m.category.toLowerCase().includes("photo") || m.title.toLowerCase().includes("photo"));
+
+          if ((isVenueMatch || isCateringMatch || isDjMatch || isPhotoMatch) && m.autoCompleted) {
+            return {
+              ...m,
+              status: m.id === "m-1" ? ("in_progress" as const) : ("pending" as const),
+              autoCompleted: false,
+            };
+          }
+          return m;
+        }),
+      );
+    }
   };
 
   // Readiness Ring calculation:
@@ -2273,7 +2366,15 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
       return prev.map((m) => {
         if (m.id === id) {
-          return { ...m, date: newDate, daysToGo: Math.max(0, m.daysToGo + diffDays) };
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const targetD = new Date(newDate);
+          targetD.setHours(0, 0, 0, 0);
+          const computedDaysToGo = !isNaN(targetD.getTime())
+            ? Math.max(0, Math.round((targetD.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)))
+            : Math.max(0, m.daysToGo + diffDays);
+
+          return { ...m, date: newDate, daysToGo: computedDaysToGo };
         }
         if (target.dependentIds.includes(m.id)) {
           const mDate = new Date(m.date);
@@ -2287,6 +2388,65 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         return m;
       });
     });
+  };
+
+  const toggleMilestoneStatus = (id: string) => {
+    setMilestones((prev) => {
+      const target = prev.find((m) => m.id === id);
+      const willBeCompleted = target ? target.status !== "completed" : false;
+      if (willBeCompleted) {
+        setConfettiTrigger((c) => c + 1);
+      }
+      return prev.map((m) => {
+        if (m.id !== id) return m;
+        return {
+          ...m,
+          status: willBeCompleted ? ("completed" as const) : ("pending" as const),
+          autoCompleted: false,
+        };
+      });
+    });
+  };
+
+  const setMilestoneStatus = (id: string, status: "completed" | "in_progress" | "pending") => {
+    if (status === "completed") {
+      setConfettiTrigger((c) => c + 1);
+    }
+    setMilestones((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, status, autoCompleted: false } : m)),
+    );
+  };
+
+  const updateEventDate = (newDateStr: string) => {
+    const parsed = new Date(newDateStr);
+    if (!isNaN(parsed.getTime())) {
+      const formatted = parsed.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      setEventDate(formatted);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(parsed);
+      target.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      setDaysRemaining(Math.max(1, diffDays));
+      setMilestones((prev) =>
+        prev.map((m) => {
+          if (m.phase === "celebration" || m.id === "m-8") {
+            return {
+              ...m,
+              date: newDateStr.length === 10 ? newDateStr : parsed.toISOString().slice(0, 10),
+              daysToGo: Math.max(1, diffDays),
+            };
+          }
+          return m;
+        }),
+      );
+    } else {
+      setEventDate(newDateStr);
+    }
   };
 
   const shiftDownstreamDays = (fromMilestoneId: string, daysShift: number) => {
@@ -2578,6 +2738,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         eventName,
         eventCity,
         eventDate,
+        setEventDate,
+        updateEventDate,
         daysRemaining,
         isWizardOpen,
         setIsWizardOpen,
@@ -2596,6 +2758,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         confettiTrigger,
         milestones,
         updateMilestoneDate,
+        toggleMilestoneStatus,
+        setMilestoneStatus,
         shiftDownstreamDays,
         addMilestone,
         deleteMilestone,
