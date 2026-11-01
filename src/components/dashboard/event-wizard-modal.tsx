@@ -409,7 +409,6 @@ export function EventWizardModal() {
   } = useDashboard();
 
   const plannedGuests = plannedGuestsList?.length;
-  const isExistingEventPlanned = Boolean(plannedEventType);
 
   const [currentChapter, setCurrentChapter] = useState<number>(1);
 
@@ -651,10 +650,6 @@ export function EventWizardModal() {
   const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
   const handleSelectEventType = (typeId: string) => {
-    if (isExistingEventPlanned) {
-      // Event is already planned: event type cannot be altered
-      return;
-    }
     setSelectedType(typeId);
     const matched = celebrationTypes.find((c) => c.id === typeId);
     if (!matched) return;
@@ -916,50 +911,26 @@ export function EventWizardModal() {
               <div>
                 <div className="flex items-center justify-between mb-2.5">
                   <label className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground block">
-                    1. Event Type{" "}
-                    {isExistingEventPlanned && (
-                      <span className="text-primary font-semibold lowercase ml-1">
-                        (locked for active event)
-                      </span>
-                    )}
+                    1. Select Event Type
                   </label>
-                  {isExistingEventPlanned && (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-lg">
-                      <Lock className="size-3" /> Event Type Locked
-                    </span>
-                  )}
+                  <span className="text-xs text-primary font-semibold">
+                    {celebrationTypes.find((c) => c.id === selectedType)?.title}
+                  </span>
                 </div>
-
-                {isExistingEventPlanned && (
-                  <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-primary/20 bg-primary/5 p-3.5 text-xs">
-                    <Lock className="size-4 text-primary shrink-0 mt-0.5" />
-                    <p className="text-muted-foreground leading-relaxed">
-                      This event is planned as a{" "}
-                      <strong className="text-foreground">{plannedEventType}</strong>. The event
-                      type is locked to maintain harmony with existing vendor briefs and timeline
-                      dependencies. You can customize the date, city, budget, guest count, story,
-                      and tradition options below.
-                    </p>
-                  </div>
-                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {celebrationTypes.map((type) => {
                     const Icon = type.icon;
                     const isSelected = selectedType === type.id;
-                    const isDisabled = isExistingEventPlanned && !isSelected;
                     return (
                       <button
                         key={type.id}
                         type="button"
-                        disabled={isDisabled}
                         onClick={() => handleSelectEventType(type.id)}
-                        className={`text-left rounded-2xl border overflow-hidden transition-all duration-300 relative group flex flex-col ${
+                        className={`text-left rounded-2xl border overflow-hidden transition-all duration-300 relative group flex flex-col cursor-pointer ${
                           isSelected
                             ? "border-primary bg-primary/10 dark:bg-primary/20 shadow-lg shadow-primary/15 ring-2 ring-primary scale-[1.01]"
-                            : isDisabled
-                              ? "opacity-35 cursor-not-allowed border-border/40 bg-muted/20 grayscale-[0.6] pointer-events-none"
-                              : "border-border/80 bg-card hover:border-foreground/30 hover:bg-muted/40 shadow-xs"
+                            : "border-border/80 bg-card hover:border-primary/50 hover:bg-muted/40 shadow-xs"
                         }`}
                       >
                         {/* High-res Photo Thumbnail */}
@@ -971,15 +942,11 @@ export function EventWizardModal() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                           <div className="absolute top-3 right-3">
-                            {isSelected ? (
+                            {isSelected && (
                               <div className="size-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-md">
                                 <Check className="size-3.5 stroke-[3]" />
                               </div>
-                            ) : isDisabled ? (
-                              <div className="size-6 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center text-white/70 shadow-md">
-                                <Lock className="size-3" />
-                              </div>
-                            ) : null}
+                            )}
                           </div>
                           <div className="absolute bottom-2.5 left-3.5 flex items-center gap-2 text-white">
                             <div className="p-1.5 rounded-lg bg-black/60 backdrop-blur-md text-amber-400">
